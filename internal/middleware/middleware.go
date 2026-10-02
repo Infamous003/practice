@@ -46,3 +46,15 @@ func Authenticate() gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+
+func RequireRole(role string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		u := context.GetUser(ctx)
+		if u.Role != role {
+			response.ErrorResponse(ctx, http.StatusForbidden, "You do not have access to this resource")
+			ctx.Abort()
+			return
+		}
+		ctx.Next()
+	}
+}
