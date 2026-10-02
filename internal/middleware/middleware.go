@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"net/http"
 	"practice/internal/context"
+	"practice/internal/response"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -20,6 +22,27 @@ func AttachRequestIDMiddleware() gin.HandlerFunc {
 			}
 			context.SetRequestID(ctx, parsedRequestID)
 		}
+		ctx.Next()
+	}
+}
+
+func AuthenticateMiddleware() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		h := ctx.GetHeader("Authorization")
+		if h == "" {
+			response.ErrorResponse(ctx, http.StatusUnauthorized, "Unauthorized")
+			ctx.Abort()
+			return
+		}
+
+		user := context.CheckUserExists(h)
+		if user == nil {
+			response.ErrorResponse(ctx, http.StatusUnauthorized, "Unauthorized")
+			ctx.Abort()
+			return
+		}
+
+		context.SetUser(ctx, *user)
 		ctx.Next()
 	}
 }

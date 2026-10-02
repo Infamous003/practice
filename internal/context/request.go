@@ -6,8 +6,10 @@ import (
 )
 
 type requestIDContext struct{}
+type requestContext struct{}
 
 var requestIDKey *requestIDContext
+var userContextKey *requestContext
 
 func SetRequestID(ctx *gin.Context, incRequestID uuid.UUID) {
 	if incRequestID != uuid.Nil {
@@ -23,6 +25,19 @@ func GetRequestID(ctx *gin.Context) uuid.UUID {
 		panic("request id not set")
 	}
 	return id.(uuid.UUID)
+}
+
+func SetUser(ctx *gin.Context, user User) {
+	ctx.Set(&userContextKey, user)
+}
+
+func GetUser(ctx *gin.Context) *User {
+	u, exists := ctx.Get(&userContextKey)
+	if !exists {
+		return nil
+	}
+	user := u.(User)
+	return &user
 }
 
 func generateRequestID() uuid.UUID {

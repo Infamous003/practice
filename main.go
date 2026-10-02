@@ -43,10 +43,14 @@ func main() {
 	notesHandler := handlers.NewNotesHandler(noteService, l)
 
 	r.GET("/health", handlers.HealthHandler)
-	r.GET("/notes/:id", notesHandler.GetNoteByIDHandler())
-	r.POST("/notes", notesHandler.CreateNoteHandler())
-	r.GET("/notes", notesHandler.ListNotesHandler())
-	r.DELETE("/notes/:id", notesHandler.DeleteNoteHandler())
+
+	v1 := r.Group("/notes")
+	v1.Use(middleware.AuthenticateMiddleware())
+
+	v1.GET("/:id", notesHandler.GetNoteByIDHandler())
+	v1.DELETE("/:id", notesHandler.DeleteNoteHandler())
+	v1.POST("", notesHandler.CreateNoteHandler())
+	v1.GET("", notesHandler.ListNotesHandler())
 
 	srv := http.Server{
 		Addr:         ":9090",

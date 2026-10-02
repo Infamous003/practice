@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"practice/internal/context"
 	"practice/internal/domain/notes"
 	"practice/internal/dto"
 	"practice/internal/response"
@@ -26,6 +27,11 @@ func NewNotesHandler(service *notes.Service, l *log.Logger) *NotesHandler {
 
 func (h *NotesHandler) GetNoteByIDHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		authenticatedUser := context.GetUser(c)
+		if authenticatedUser == nil {
+			response.ErrorResponse(c, http.StatusUnauthorized, "Unauthorized")
+			return
+		}
 		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 		if err != nil {
 			response.ErrorResponse(c, http.StatusBadRequest, err.Error())
