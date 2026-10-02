@@ -36,7 +36,7 @@ func main() {
 	r := gin.New() // gin.Default() includes logger and recovery
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-	r.Use(middleware.AttachRequestIDMiddleware())
+	r.Use(middleware.AttachRequestID())
 
 	notesRepo := postgres.NewNotesRepo(db)
 	noteService := notes.NewService(notesRepo)
@@ -45,7 +45,7 @@ func main() {
 	r.GET("/health", handlers.HealthHandler)
 
 	v1 := r.Group("/notes")
-	v1.Use(middleware.AuthenticateMiddleware())
+	v1.Use(middleware.Authenticate())
 
 	v1.GET("/:id", notesHandler.GetNoteByIDHandler())
 	v1.DELETE("/:id", notesHandler.DeleteNoteHandler())

@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func AttachRequestIDMiddleware() gin.HandlerFunc {
+func AttachRequestID() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		reqID := ctx.GetHeader("X-Request-ID")
 
@@ -26,7 +26,7 @@ func AttachRequestIDMiddleware() gin.HandlerFunc {
 	}
 }
 
-func AuthenticateMiddleware() gin.HandlerFunc {
+func Authenticate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		h := ctx.GetHeader("Authorization")
 		if h == "" {
